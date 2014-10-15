@@ -7,6 +7,10 @@ import json
 
 
 class Document:
+    hdfs_path = ""
+    def __init__(self):
+        self.read_configuration("config.json")
+
     def read_configuration(self, config_file):
         try:
             json_data = open(config_file)
@@ -18,14 +22,20 @@ class Document:
             print "Unexpected error:", sys.exc_info()[0]
             raise
 
-        hdfs_path = data["HDFS_PATH"] 
+        self.hdfs_path = data["HDFS_PATH"] 
 
     # File format storage : monolingual_file.[tk](tokenized).[lc](lowercased).[Language]
     def load_to_hdfs(self, file_path, file_name, language):
         print "Start loading to hdfs ..."
-        subprocess.call("hadoop fs -copyFromLocal "+file_path+"/"+file_name+" "+hdfs_path+"/corpus/monolingual/"file_name+"."+language)
+        #str = "hadoop fs -copyFromLocal "+file_path+"/"+file_name+" "+self.hdfs_path+"/corpus/monolingual/"+file_name+"."+language
+        cat = subprocess.Popen(["hadoop", "fs", "-copyFromLocal", file_path+"/"+file_name , self.hdfs_path+"/corpus/monolingual/"+file_name+"."+language], stdout=subprocess.PIPE)
+        for line in cat.stdout:
+            print line
         print "End of loading"
         #TODO storing other informations 
 
     #def list_documents(self):
-        
+       
+
+
+ 

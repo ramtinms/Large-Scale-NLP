@@ -1,0 +1,67 @@
+import numpy as np
+from pyspark import SparkContext
+
+
+#def compute_unigram():
+
+
+def ngram(line):
+    MIN_N = 1
+    MAX_N = 4
+    results = []
+    tokens = line.split(' ')
+    n_tokens = len(tokens)
+    for i in xrange(n_tokens):
+        for j in xrange(i+MIN_N, min(n_tokens, i+MAX_N)+1):
+            results.append((" ".join(tokens[i:j]),1))
+    return results
+
+
+def word_count_compute(hdfs_input):
+    sc = SparkContext("local","Simple Language Model Computing")
+    file    = sc.textFile(hdfs_input)
+    counts  = file.flatMap(ngram).reduceByKey(lambda a, b: a + b)
+    counts.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/temp")
+   
+
+
+
+
+class Simple_lm:
+
+    def __init__(self):
+        self.sc = SparkContext("local","Simple Language Model Computing")
+
+    def ngram(self, line):
+        MIN_N = 1
+        MAX_N = 4
+        results = []
+        tokens = line.split(' ')
+        n_tokens = len(tokens)
+        for i in xrange(n_tokens):
+            for j in xrange(i+MIN_N, min(n_tokens, i+MAX_N)+1):
+                results.append((" ".join(tokens[i:j]),1))
+        return results
+
+    def word_count_compute(self, hdfs_input):
+        file    = self.sc.textFile(hdfs_input)
+        counts  = file.flatMap(self.ngram).reduceByKey(lambda a, b: a + b)
+        counts.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/temp")
+
+
+if __name__ == "__main__":
+
+    word_count_compute("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/test_java_input")
+
+#    unittest = Simple_lm()
+
+#    unittest.word_count_compute("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/test_java_input")
+    #if len(sys.argv) != 3:
+    #    print >> sys.stderr, "Usage: lm <file> <k> <convergeDist>"
+    #    exit(-1)
+
+#    sc = SparkContext("local","Simple Language Model Computing")
+#    file = sc.textFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/test_java_input")
+#    counts  = file.flatMap(ngram2) \
+#             .reduceByKey(lambda a, b: a + b)
+#    counts.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/results2")
