@@ -1,6 +1,6 @@
+from __future__ import division
 import numpy as np
 from pyspark import SparkContext
-
 
 #def compute_unigram():
 
@@ -16,14 +16,66 @@ def ngram(line):
             results.append((" ".join(tokens[i:j]),1))
     return results
 
+def unigram(phrase):
+    if len(phrase[0].split(' '))>1:
+        return False
+    else:
+        return True
+
+def bigram(phrase):
+    if len(phrase[0].split(' '))==2:
+        return True
+    else:
+        return False
+
+def trigram(phrase):
+    if len(phrase[0].split(' ')) == 3:
+        return True
+    else:
+        return False
+
+def unigram_probability(phrase):
+    temp = uni_norm.filter(lambda s: phrase == s)
+    print temp
+
+def compute_lm(sentence):
+    words = sentence.split(" ")
+    #probability = 
 
 def word_count_compute(hdfs_input):
     sc = SparkContext("local","Simple Language Model Computing")
     file    = sc.textFile(hdfs_input)
     counts  = file.flatMap(ngram).reduceByKey(lambda a, b: a + b)
-    counts.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/temp")
-   
+    uni = counts.filter(unigram)
 
+    totalsum = sum(x[1] for x in uni.collect())
+    uni_norm = uni.map(lambda a: (a[0], a[1]/totalsum)).reduceByKey(lambda a,b: a+b)
+
+    bigrams = counts.filter(bigram)
+    totalsum = sum(x[1] for x in bigrams.collect())
+    bigrams_norm = bigrams.map(lambda a: (a[0], a[1]/totalsum)).reduceByKey(lambda a,b: a+b)
+
+    trigrams = counts.filter(trigram)
+    totalsum = sum(x[1] for x in trigrams.collect())
+    trigrams_norm = trigrams.map(lambda a: (a[0], a[1]/totalsum)).reduceByKey(lambda a,b: a+b)
+
+# TODO object saving
+#    uni_norm.saveAsObjectFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/unigram")
+#    bigrams_norm.saveAsObjectFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/bigram")
+#    trigrams_norm.saveAsObjectFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/trigram")
+
+
+#TODO query
+    temp = uni_norm.filter(lambda s: "hadoop" == s)
+    #print temp.first()
+ 
+
+    
+    #uni_norm.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/temp1")
+    
+
+    #counts.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/temp")
+   
 
 
 
