@@ -42,23 +42,34 @@ def compute_lm(sentence):
     words = sentence.split(" ")
     #probability = 
 
-def word_count_compute(hdfs_input):
+def word_count_compute(hdfs_input,hdfs_output):
     sc = SparkContext("local","Simple Language Model Computing")
     file    = sc.textFile(hdfs_input)
     counts  = file.flatMap(ngram).reduceByKey(lambda a, b: a + b)
-    uni = counts.filter(unigram)
+    uni = counts.filter(unigram).cache()
+    bigrams = counts.filter(bigram)
+    trigrams = counts.filter(trigram)
+    uni.saveAsTextFile(hdfs_output+"uni")
+    bigrams.saveAsTextFile(hdfs_output+"bi")
+    trigrams.saveAsTextFile(hdfs_output+"tri")   
+#    uni.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/unigram")
+#    bigrams.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/bigram")
+#    trigrams.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/trigram")
+
 
     totalsum = sum(x[1] for x in uni.collect())
     uni_norm = uni.map(lambda a: (a[0], a[1]/totalsum)).reduceByKey(lambda a,b: a+b)
+    uni_numbers = uni_norm.count()
 
-    bigrams = counts.filter(bigram)
+#    bigrams = counts.filter(bigram)
     totalsum = sum(x[1] for x in bigrams.collect())
     bigrams_norm = bigrams.map(lambda a: (a[0], a[1]/totalsum)).reduceByKey(lambda a,b: a+b)
-
-    trigrams = counts.filter(trigram)
+    bigrams_numbers = bigrams_norm.count()
+#
+#    trigrams = counts.filter(trigram)
     totalsum = sum(x[1] for x in trigrams.collect())
     trigrams_norm = trigrams.map(lambda a: (a[0], a[1]/totalsum)).reduceByKey(lambda a,b: a+b)
-
+    trigrams_numbers = trigrams_norm.count()
 # TODO object saving
 #    uni_norm.saveAsObjectFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/unigram")
 #    bigrams_norm.saveAsObjectFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/bigram")
@@ -66,9 +77,13 @@ def word_count_compute(hdfs_input):
 
 
 #TODO query
-    temp = uni_norm.filter(lambda s: "hadoop" == s)
-    #print temp.first()
- 
+
+# Add one smoothing
+    temp = uni_norm.filter(lambda s: s[0] == "Hello")
+    if temp.count() > 0:
+        print temp.first()
+    else:
+        print "not found"
 
     
     #uni_norm.saveAsTextFile("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/temp1")
