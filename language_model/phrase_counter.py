@@ -7,6 +7,8 @@ from pyspark import SparkContext
 
 def get_ngrams(line,MIN_N = 1,MAX_N = 4):
     #TODO add start of sent
+    line = "<S> "*(int(MAX_N)-1)+line
+    # might be wrong
     results = []
     tokens = line.split(' ')
     n_tokens = len(tokens)
@@ -38,7 +40,7 @@ def word_count_compute(hdfs_input,hdfs_output,min_n,max_n):
         vocab_size.append(temp_counts)
         #print i,temp_counts,temp_sum
 
-    #print sums,vocab_size
+    print sums,vocab_size
     return counts,sums,vocab_size
 
 #    trigrams_norm = trigrams.map(lambda a: (a[0], a[1]/totalsum)).reduceByKey(lambda a,b: a+b)

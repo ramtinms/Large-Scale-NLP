@@ -28,7 +28,7 @@ class LM:
 #########
 # models = simple_ngram, interpolation, backoff
 # parameters for simple_ngram : 
-
+#TODO backoff (absolute, linear) , Kneser-Ney smoothing
 ########
 
     def simple_ngram_probability(self, input_sentence, smooth_method, smooth_parameters):
