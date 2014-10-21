@@ -1,6 +1,5 @@
 from __future__ import division
 from phrase_counter import word_count_compute 
-
 #Language Model Type
 #N-gram
 
@@ -13,7 +12,7 @@ class LM:
     n = 0
     def __init__(self, n):
         self.n=n
-        self.c,self.s,self.v = word_count_compute("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/test_java_input2","hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/test2",1,n)
+        self.c,self.s,self.v = word_count_compute("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/test_java_input","hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/test2",1,n)
 
     def get_ngrams(self, line, n):
         line = "<S> "*(n-1)+line
@@ -49,9 +48,9 @@ class LM:
         
     def discount(parts):
         sigma =1 
-        #alpha = 0.5
-        
+        #alpha = 0.5        
         return False
+
     def distribute(parts):
         return False
 
@@ -68,8 +67,8 @@ class LM:
                 return discount(parts)
             else:
                 return distribute(parts)
-       else:
-           print "TODO"
+        else:
+            print "TODO"
             
 
     def sentence_probability(self, input_sentence, model, model_parameters, smooth_method):

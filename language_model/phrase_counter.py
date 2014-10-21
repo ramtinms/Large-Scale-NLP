@@ -23,6 +23,9 @@ def is_ngram(phrase,n):
     else:
         return False
 
+
+    temp_sum = 0
+
 def word_count_compute(hdfs_input,hdfs_output,min_n,max_n):
 
     #TODO add start of sent
@@ -34,8 +37,10 @@ def word_count_compute(hdfs_input,hdfs_output,min_n,max_n):
     counts  = file.flatMap(lambda a : get_ngrams(a,min_n,max_n)).reduceByKey(lambda a, b: a + b)
     for i in range(min_n, max_n+1):
         temp = counts.filter(lambda a: is_ngram(a,i))
-        temp_sum = sum(x[1] for x in temp.collect())
-        sums.append(temp_sum)
+        accum = sc.accumulator(0)
+        temp.foreach(lambda a: accum.add(a[1]))
+        #temp_sum = sum(x[1] for x in temp.collect())
+        sums.append(accum.value)
         temp_counts = temp.count()
         vocab_size.append(temp_counts)
         #print i,temp_counts,temp_sum
