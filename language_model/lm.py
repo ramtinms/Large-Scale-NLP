@@ -10,9 +10,9 @@ from phrase_counter import word_count_compute
 #Simple ngram 
 class LM:
     n = 0
-    def __init__(self, n):
+    def __init__(self, n, input_hdfs):
         self.n=n
-        self.c,self.s,self.v = word_count_compute("hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/test_java_input","hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/test2",1,n)
+        self.c,self.s,self.v = word_count_compute(input_hdfs,"hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/models/test2",1,n)
 
     def get_ngrams(self, line, n):
         line = "<S> "*(n-1)+line
@@ -133,7 +133,7 @@ class LM:
 
 
 if __name__ == "__main__":
-    unit_test = LM(3)
+    unit_test = LM(3,"hdfs://rcg-hadoop-01.rcg.sfu.ca:8020/user/rmehdiza/test_java_input")
     #sentence_probability(self, input_sentence, model, model_parameters, smooth_method)
     unit_test.sentence_probability("Hello World Bye","simple_ngram","","No")
     unit_test.sentence_probability("Hello World Bye","simple_ngram","","AddOne")
