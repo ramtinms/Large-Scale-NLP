@@ -12,7 +12,7 @@ module load NL/HADOOP/SPARK/1.0.0
 
 
 ##Future topics 
-Check this link to see plans for developing this package. 
+Check this link to see plans for developing this package. http://ramtinms.github.io/nlp.html
 
 
 1. Adding Smoothing Methods 
