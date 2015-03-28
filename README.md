@@ -12,6 +12,9 @@ module load NL/HADOOP/SPARK/1.0.0
 
 
 ##Future topics 
+Check this link to see plans for developing this package. 
+
+
 1. Adding Smoothing Methods 
 2. Adding Dimentionality Reduction Methods 
 3. Implementing Structured Prediction Methods like (HMM, CRF)
